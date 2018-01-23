@@ -3,8 +3,16 @@ var app = require('express')();
 var express = require('express');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
-mongoose.connect('mongodb://localhost:27017/gescompta');
+var jwt = require('jsonwebtoken');
+var config = require('./Config');
 var Schema = require('./Schema').DB;
+
+mongoose.connect(config.database);
+app.set('superSecret', config.secret);
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+
 
 
 httpserver = http.createServer(app);
@@ -13,7 +21,7 @@ app.use(bodyParser.json());
 app.post('/autentificate', function (req, res) {
     Schema.User.findOne({ 'login': req.body.login, 'isActive': true}, function (err, usr) {
         if (usr.password == req.body.password){
-            res.status(200).send();
+            res.json(usr).send();
         } else {
             res.status(401).send();
         }
@@ -25,7 +33,7 @@ app.post('/autentificate', function (req, res) {
 app.get('/search/user/:offset/:limit', function (req, res) {
     Schema.User.find({ 'isActive': true }, function (err, usrs) {
         res.json(usrs);
-    }).skip(req.params.offset).limit(req.body.limit).exec();
+    }).skip(parseInt(req.params.offset)).limit(parseInt(req.body.limit)).exec();
 });
 app.get('/user/:id', function (req, res) {
     Schema.User.findById(req.params.id , function (err, usrs) {
@@ -69,7 +77,7 @@ app.post('/user/update/:id', function (req, res) {
 app.get('/search/produit/:offset/:limit', function (req, res) {
     Schema.Produit.find({ 'isActive': true }, function (err, prd) {
         res.json(prd);
-    }).skip(req.params.offset).limit(req.body.limit).exec();
+    }).skip(parseInt(req.params.offset)).limit(parseInt(req.body.limit)).exec();
 });
 app.get('/produit/:id', function (req, res) {
     Schema.Produit.findById(req.params.id , function (err, prd) {
@@ -126,7 +134,7 @@ app.post('/produit/update/:id', function (req, res) {
 app.get('/search/interface/:offset/:limit', function (req, res) {
     Schema.Interface.find({ 'isActive': true }, function (err, inf) {
         res.json(inf);
-    }).skip(req.params.offset).limit(req.body.limit).exec();
+    }).skip(parseInt(req.params.offset)).limit(parseInt(req.body.limit)).exec();
 });
 app.get('/interface/:id', function (req, res) {
     Schema.Interface.findById(req.params.id , function (err, inf) {
@@ -165,7 +173,7 @@ app.post('/interface/update/:id', function (req, res) {
 app.get('/search/os/:offset/:limit', function (req, res) {
     Schema.OS.find({ 'isActive': true }, function (err, os) {
         res.json(os);
-    }).skip(req.params.offset).limit(req.body.limit).exec();
+    }).skip(parseInt(req.params.offset)).limit(parseInt(req.body.limit)).exec();
 });
 app.get('/os/:id', function (req, res) {
     Schema.OS.findById(req.params.id , function (err, os) {
@@ -204,7 +212,7 @@ app.post('/os/update/:id', function (req, res) {
 app.get('/search/marque/:offset/:limit', function (req, res) {
     Schema.Marque.find({ 'isActive': true }, function (err, mrq) {
         res.json(mrq);
-    }).skip(req.params.offset).limit(req.body.limit).exec();
+    }).skip(parseInt(req.params.offset)).limit(parseInt(req.body.limit)).exec();
 });
 app.get('/marque/:id', function (req, res) {
     Schema.Marque.findById(req.params.id , function (err, mrq) {
@@ -243,7 +251,7 @@ app.post('/marque/update/:id', function (req, res) {
 app.get('/search/adresse/:offset/:limit', function (req, res) {
     Schema.Adresse.find({ 'isActive': true }, function (err, adr) {
         res.json(adr);
-    }).skip(req.params.offset).limit(req.body.limit).exec();
+    }).skip(parseInt(req.params.offset)).limit(parseInt(req.body.limit)).exec();
 });
 
 app.get('/adresse/:id', function (req, res) {
@@ -290,7 +298,7 @@ app.post('/adresse/update/:id', function (req, res) {
 app.get('/search/commande/:offset/:limit', function (req, res) {
     Schema.Commande.find({ 'isActive': true }, function (err, cmd) {
         res.json(cmd);
-    }).skip(req.params.offset).limit(req.body.limit).exec();
+    }).skip(parseInt(req.params.offset)).limit(parseInt(req.body.limit)).exec();
 });
 app.get('/commande/:id', function (req, res) {
     Schema.Commande.findById(req.params.id , function (err, cmd) {
